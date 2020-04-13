@@ -90,12 +90,17 @@
 #define REST      0
 
 int melody[] = {
-  NOTE_F5,8, NOTE_D5,8, NOTE_E5,8, NOTE_C5,8, NOTE_D5,8, NOTE_B4,8,
-  NOTE_C5,8, NOTE_A4,8, NOTE_B4,8, NOTE_G4,8, NOTE_A4,8, NOTE_G4,8, NOTE_E4,8, NOTE_G4,8,
-  NOTE_G4,-2, REST,4
+  NOTE_D6,8, NOTE_G5,16, NOTE_A5,16, NOTE_B5,16, NOTE_C6,16,
+  NOTE_D6,8,NOTE_G5,4,
+  NOTE_E6,8,NOTE_C6,16,NOTE_D6,16,NOTE_E6,16,NOTE_FS6,16,
+  NOTE_G6,8,NOTE_G5,4,
+  NOTE_C6,32,NOTE_C6,8,NOTE_D6,16,NOTE_C6,16,NOTE_B5,16,NOTE_A5,16,
+  NOTE_B5,8,NOTE_C6,16,NOTE_B5,16,NOTE_A5,16,NOTE_G5,16,
+  NOTE_FS5,8,NOTE_G5,16,NOTE_A5,16,NOTE_B5,16,NOTE_G5,16,
+  NOTE_B5,32,NOTE_A5,4,
 };
 
-int tempo = 120;
+int tempo = 130;
 
 // sizeof gives the number of bytes, each int value is composed of two bytes (16 bits)
 // there are two values per note (pitch and duration), so for each note there are four bytes
@@ -105,3 +110,31 @@ int notes = sizeof(melody) / sizeof(melody[0]) / 2;
 int wholenote = (60000 * 4) / tempo;
 
 int divider = 0, noteDuration = 0;
+int buzzer = 5;
+
+void playTone() {
+ // iterate over the notes of the melody. 
+  // Remember, the array is twice the number of notes (notes + durations)
+  for (int thisNote = 0; thisNote < notes * 2; thisNote = thisNote + 2) {
+
+    // calculates the duration of each note
+    divider = melody[thisNote + 1];
+    if (divider > 0) {
+      // regular note, just proceed
+      noteDuration = (wholenote) / divider;
+    } else if (divider < 0) {
+      // dotted notes are represented with negative durations!!
+      noteDuration = (wholenote) / abs(divider);
+      noteDuration *= 1.5; // increases the duration in half for dotted notes
+    }
+
+    // we only play the note for 90% of the duration, leaving 10% as a pause
+    tone(buzzer, melody[thisNote], noteDuration*0.9);
+
+    // Wait for the specief duration before playing the next note.
+    delay(noteDuration);
+    
+    // stop the waveform generation before the next note.
+    noTone(buzzer);
+  }
+}
