@@ -17,7 +17,6 @@ int macroSize = 0;
 int button1 = 3;
 int musicPin = 5;
 
-
 void setup() {
   Serial1.begin(9600);
   Serial.begin(9600);
@@ -28,7 +27,7 @@ void setup() {
   Serial1.println("Welcome!");
   pinMode(button1, INPUT);
   pinMode(musicPin, OUTPUT);
-  playTone();
+  playTone(minuet3_section1, sizeof(minuet3_section1) / sizeof(minuet3_section1[0]) / 2, 90);
 }
 
 
@@ -38,7 +37,12 @@ void loop() {
   if (buttonState == HIGH) {
     Serial.println("Button 1 pressed");
     Serial1.println("Ok!");
-    playTone();
+    if (osx) {
+      playTone(minuet3_section3, sizeof(minuet3_section3) / sizeof(minuet3_section3[0]) / 2, 90);
+    } else {
+      playTone(minuet3_section2, sizeof(minuet3_section2) / sizeof(minuet3_section2[0]) / 2, 90);
+    }
+    osx = !osx;
   }
   while (Serial1.available() > 0){   
     char inChar = (char)Serial1.read();

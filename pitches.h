@@ -89,36 +89,51 @@
 #define NOTE_DS8 4978
 #define REST      0
 
-int melody[] = {
+int minuet3_section1[] = {
   NOTE_D6,8, NOTE_G5,16, NOTE_A5,16, NOTE_B5,16, NOTE_C6,16,
-  NOTE_D6,8,NOTE_G5,4,
+  NOTE_D6,8,NOTE_G5,7,
   NOTE_E6,8,NOTE_C6,16,NOTE_D6,16,NOTE_E6,16,NOTE_FS6,16,
-  NOTE_G6,8,NOTE_G5,4,
+  NOTE_G6,8,NOTE_G5,7,
   NOTE_C6,32,NOTE_C6,8,NOTE_D6,16,NOTE_C6,16,NOTE_B5,16,NOTE_A5,16,
   NOTE_B5,8,NOTE_C6,16,NOTE_B5,16,NOTE_A5,16,NOTE_G5,16,
   NOTE_FS5,8,NOTE_G5,16,NOTE_A5,16,NOTE_B5,16,NOTE_G5,16,
   NOTE_B5,32,NOTE_A5,4,
 };
 
-int tempo = 130;
+int minuet3_section2[] = {
+  NOTE_B6,8,NOTE_G6,16,NOTE_A6,16,NOTE_B6,16,NOTE_G6,16,
+  NOTE_A6,8,NOTE_D6,16,NOTE_E6,16,NOTE_FS6,16,NOTE_D6,16,
+  NOTE_G6,8,NOTE_E6,16,NOTE_FS6,16,NOTE_G6,16,NOTE_D6,16,
+  NOTE_CS6,8,NOTE_B5,16,NOTE_CS6,16,NOTE_A5,8,
+  NOTE_A5,16,NOTE_B5,16,NOTE_CS6,16,NOTE_D6,16,NOTE_E6,16,NOTE_FS6,16,
+  NOTE_G6,8,NOTE_FS6,8,NOTE_E6,8,
+  NOTE_FS6,8,NOTE_A5,8,NOTE_CS6,8,
+  NOTE_D6,6
+};
 
-// sizeof gives the number of bytes, each int value is composed of two bytes (16 bits)
-// there are two values per note (pitch and duration), so for each note there are four bytes
-int notes = sizeof(melody) / sizeof(melody[0]) / 2;
+int minuet3_section3[] = {
+  NOTE_D6,8,NOTE_G5,16,NOTE_FS5,16,NOTE_G5,8,
+  NOTE_E6,8,NOTE_G5,16,NOTE_FS5,16,NOTE_G5,8,
+  NOTE_D6,8,NOTE_C6,7,NOTE_B5,7,
+  NOTE_A5,16,NOTE_G5,16,NOTE_FS5,16,NOTE_G5,16,NOTE_A5,8,
+  NOTE_D5,16,NOTE_E5,16,NOTE_FS5,16,NOTE_G5,16,NOTE_A5,16,NOTE_B5,16,
+  NOTE_C6,8,NOTE_B5,8,NOTE_A5,8,
+  NOTE_B5,8,NOTE_D5,8,NOTE_G5,7,NOTE_FS5,7,
+  NOTE_G5,3
+};
 
-// this calculates the duration of a whole note in ms
-int wholenote = (60000 * 4) / tempo;
-
-int divider = 0, noteDuration = 0;
 int buzzer = 5;
 
-void playTone() {
+void playTone(int* melodyParam, int notes, int tempo) {
+  int wholenote = (60000 * 4) / tempo;
+  int divider = 0, noteDuration = 0;
+
  // iterate over the notes of the melody. 
   // Remember, the array is twice the number of notes (notes + durations)
   for (int thisNote = 0; thisNote < notes * 2; thisNote = thisNote + 2) {
 
     // calculates the duration of each note
-    divider = melody[thisNote + 1];
+    divider = melodyParam[thisNote + 1];
     if (divider > 0) {
       // regular note, just proceed
       noteDuration = (wholenote) / divider;
@@ -129,7 +144,7 @@ void playTone() {
     }
 
     // we only play the note for 90% of the duration, leaving 10% as a pause
-    tone(buzzer, melody[thisNote], noteDuration*0.9);
+    tone(buzzer, melodyParam[thisNote], noteDuration*0.9);
 
     // Wait for the specief duration before playing the next note.
     delay(noteDuration);
